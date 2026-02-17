@@ -162,10 +162,16 @@ function getChapterDirs(lang) {
   return chapterDirs;
 }
 
-// Read markdown file content
+// Read markdown file content and rewrite image paths
 function readMarkdownFile(filePath) {
   if (!fs.existsSync(filePath)) return '';
-  return fs.readFileSync(filePath, 'utf8');
+  let content = fs.readFileSync(filePath, 'utf8');
+  
+  // Rewrite relative image paths to work from the flattened build location
+  // Replace ../../images/ with images/ since Pandoc runs with --resource-path=book/en
+  content = content.replace(/!\[([^\]]*)\]\(\.\.\/\.\.\/images\//g, '![$1](images/');
+  
+  return content;
 }
 
 // Better sorting function for files with numeric prefixes
